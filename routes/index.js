@@ -2,6 +2,17 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 var mongodb = require('mongodb');
+const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
+const jwt = require("jsonwebtoken");
+
+let secret = "RANDOMSECRETCHANGETHIS";
+
+const generateToken = (data, expires) => {
+  return jwt.sign(data, secret, {
+    expiresIn: expires
+  });
+};
 
 
 // We need to work with "MongoClient" interface in order to connect to a mongodb server.
@@ -12,6 +23,7 @@ var dbUrl = 'mongodb://localhost:27017/';
 
 // we will use this variable later to insert and retrieve a "collection" of data
 var collection;
+var user_collection;
 
 MongoClient.connect(dbUrl, { useNewUrlParser: true }, function(err, client) {
   if (err) {
@@ -37,10 +49,100 @@ MongoClient.connect(dbUrl, { useNewUrlParser: true }, function(err, client) {
         }
       });
     }); // Get the collection
+    db.createCollection('users', function(err, result) {
+      user_collection = result;
+      user_collection.stats(function(err, stats) {
+        if (err) { console.log(err) }
+        if (stats.count == 0) { // If we havent inserted before, put the default in
+          user_collection.insertOne(me, function(err, result) {
+            if (err) { console.log(err) }
+            else {
+              console.log("Inserted me");
+            }
+          });
+        }
+      });
+    }); // Get the collection
   }
 });
 
 
+const SALT_WORK_FACTOR = 10;
+
+
+
+// create a new user
+router.post('/', async (req, res) => {
+  console.log("creating user");
+  if (!req.body.username || !req.body.password)
+    return res.status(400).send({
+      message: "username and password are required"
+    });
+
+
+  try {
+
+    //  check to see if username already exists
+    const existingUser = await user_collection.findOne({
+      username: req.body.username
+    });
+    if (existingUser)
+      return res.status(403).send({
+        message: "username already exists"
+      });
+
+    // create new user
+    const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+    const hash = await bcrypt.hash(req.body.password, salt);
+    const user = {
+      username: req.body.username,
+      password: hash,
+      salt: salt,
+      token: ""
+    };
+    
+    user_collection.insertOne(user);
+
+    return res.send(user);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+});
+
+router.get('/login', async (req, res) => {
+    console.log("login route");
+    
+    try{
+      const existingUser = await user_collection.findOne({
+        username: req.body.username
+      });
+      
+      if (!existingUser)
+        return res.status(403).send({
+          message: "username or password is wrong"
+      });
+      
+      console.log("user found");
+      
+      var salt = existingUser.salt;
+      console.log("password and salt");
+      console.log(req.body.password);
+      console.log(salt);
+      const hash = await bcrypt.hash(req.body.password, salt);
+      if (hash != existingUser.password)
+        return res.status(403).send({
+          message: "username or password is wrong"
+      });
+    
+      return res.status(200).send(existingUser);
+      
+    } catch (error) {
+      console.log(error);
+      return res.sendStatus(500);
+    }
+    
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -100,5 +202,10 @@ var quotes = [{
         author: 'Walt Disney'
     },
 ];
+
+var me = {
+  username: "valk",
+  password: "pass",
+};
 
 module.exports = router;
