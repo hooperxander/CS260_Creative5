@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Creative 4</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Caveat&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+    <div id="app">
+        <h1>Welcome to the quote board!</h1>
+        <h2>Enter a new quote to add it to the page.</h2>
+        <form>
+            <input type="text" placeholder="Quote" v-model="quote">
+            <br>
+            <input type="text" placeholder="Author" v-model="author">
+            <br>
+            <button type="submit" @click="addItem">Submit</button>
+        </form>
+
+        <div id="quotes" id="quoteResult">
+            <ul>
+                <li v-for="items in board">
+                    {{items.quote }} - {{items.author}}
+                    <button @click="deleteQuote(items)">Delete</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="footer">
+        <a href="https://github.com/mmthornt/Creative4.git">Github</a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js" integrity="sha256-lrZTgsdM1iVdRigETFOU8u8/BmLX1ysQ8bzrULbuVFU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.2/dist/vue.js"></script>
+    <script src="javascripts/script.js"></script>
+</body>
+
+</html>
