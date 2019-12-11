@@ -1,7 +1,7 @@
 body {
   padding: 50px;
   font-size: 25px;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat';
   text-align: center;
   background-image: linear-gradient(to right, lightblue, aliceblue);
   min-height:100%;

@@ -6,6 +6,9 @@ const bcrypt = require("bcrypt");
 const mongoose = require('mongoose');
 const jwt = require("jsonwebtoken");
 
+var cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 let secret = "RANDOMSECRETCHANGETHIS";
 
 const generateToken = (data, expires) => {
