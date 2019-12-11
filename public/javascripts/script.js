@@ -13,7 +13,7 @@ let app = new Vue({
     created: function() {
         this.getQuotes();
         this.getUser();
-       
+
     },
     methods: {
 
@@ -102,6 +102,9 @@ let app = new Vue({
         },
         async deleteQuote(item) {
             try {
+                if (this.user == NULL) {
+                    return;
+                }
                 let response = await axios.delete("/quotes/" + item.quote.trim());
                 console.log(item.quote);
                 this.getQuotes();

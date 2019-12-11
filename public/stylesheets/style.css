@@ -3,7 +3,7 @@ body {
   font-size: 25px;
   font-family: 'Caveat';
   text-align: center;
-  background-image: linear-gradient(to right, lightblue, aliceblue);
+  background-image: linear-gradient(to right, #e6ffe6, aliceblue);
   min-height:100%;
 }
 
