@@ -55,8 +55,8 @@ let app = new Vue({
         },
         async logout() {
             try {
-                let response = await axios.delete("/api/users");
                 this.user = null;
+                let response = await axios.delete("/api/users");
             }
             catch (error) {
                 // don't worry about it

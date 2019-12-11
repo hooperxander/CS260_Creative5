@@ -4,18 +4,7 @@ var request = require('request');
 var mongodb = require('mongodb');
 const bcrypt = require("bcrypt");
 const mongoose = require('mongoose');
-const jwt = require("jsonwebtoken");
 
-var cookieParser = require("cookie-parser");
-app.use(cookieParser());
-
-let secret = "RANDOMSECRETCHANGETHIS";
-
-const generateToken = (data, expires) => {
-  return jwt.sign(data, secret, {
-    expiresIn: expires
-  });
-};
 
 
 // We need to work with "MongoClient" interface in order to connect to a mongodb server.
@@ -75,7 +64,7 @@ const SALT_WORK_FACTOR = 10;
 
 
 // create a new user
-router.post('/', async (req, res) => {
+router.post('/api/users', async (req, res) => {
   console.log("creating user");
   if (!req.body.username || !req.body.password)
     return res.status(400).send({
@@ -100,8 +89,7 @@ router.post('/', async (req, res) => {
     const user = {
       username: req.body.username,
       password: hash,
-      salt: salt,
-      token: ""
+      salt: salt
     };
     
     user_collection.insertOne(user);
@@ -113,7 +101,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/login', async (req, res) => {
+router.post('/api/users/login', async (req, res) => {
     console.log("login route");
     
     try{
