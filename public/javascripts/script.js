@@ -102,7 +102,7 @@ let app = new Vue({
         },
         async deleteQuote(item) {
             try {
-                if (this.user == NULL) {
+                if (this.user == null) {
                     return;
                 }
                 let response = await axios.delete("/quotes/" + item.quote.trim());
